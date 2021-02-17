@@ -47,7 +47,7 @@ daily_cohort_recipe = recipe(
   infection_time = rep(NA_real_, n_intake_today) %>% 
     purrr::map_at(
         sample.int(n_intake_today, n_intake_infections), 
-      ~ time - sample.int(n_infection_days, size = 1)) %>%
+      ~ time - sample.int(mean_disease_duration, size = 1)) %>%
     purrr::map_dbl(as.numeric),
   infection_status = calculate_status(time, infection_time, latent_period_duration, disease_period_duration),
   infection_silent = simulator::mix_generator(n = n_intake_today, 
@@ -103,9 +103,9 @@ sim_step = recipe(
   n_staff_infections = rpois(n = 1, lambda = staff_seed_rate), 
 
   today_cohort = simulator::make_population(
-    time = time, group = paste0('cohort--', pad(time, 3)),
+    time = time, group = paste0('cohort--', simulator::pad(time, 3)),
     n_intake_today = n_intake_today, n_intake_infections = n_intake_infections,
-    n_staff_infections = n_staff_infections, n_infection_days = n_infection_days,
+    n_staff_infections = n_staff_infections, mean_disease_duration = mean_disease_duration,
     sigma = sigma, gamma = gamma, silent_rate = silent_rate, tb_rate = tb_rate,
     test_sensitivity = test_sensitivity,
     steps = daily_cohort_recipe),
@@ -195,60 +195,61 @@ summarizer = writer$new(
   )
 )
 
-# specific sim job description here.
-theta = parameters(
-  output = recipe(
-    output_path = fs::path(output_root, simulation_name), 
-    log_path = fs::path(output_root, simulation_name, "logger")
-  ),
-  shared = recipe(
-    intake_seed_rate = intake_prevalence * n_intake_rate,
-    staff_seed_rate = staff_prevalence * n_staff,
-    calculate_status = calculate_status,
-    calculate_isolation = calculate_isolation
-  ),
-  initialization = recipe(
-    time = 0
-  ),
-  running = recipe(
-    n_steps = n_steps
-  ),
-  inputs = list(
-    simulation_name = "simple-test-3",
-    simulation_id = "00001",
-    replicate_id = "00001",
-    n_intake_rate = 100,
-    n_infection_days = 14,
-    intake_prevalence = c(0.01, 0.10),
-    n_staff = 3000,
-    staff_prevalence = 0.05,
-    silent_rate = c(0.1, 0.4),
-    beta = c(1.0, 3.5),
-    sigma = c(1/2, 1/8),
-    gamma = c(1/14, 1/5),
-    n_steps = 365,
-    max_n_steps = 425,
-    seed = 33,
-    test_sensitivity = list(
-      rapid = c(0.30, 0.55), pcr = c(0.40, 0.5, 0.9, 0.1),
-      cxr = list(asymptomatic = c(0.1, 0.2, 0.3),
-                 symptomatic = c(0.40, 0.5, 0.65, 0.75))),
-    tb_rate = 0.001,
-    output_root = "~/build/jail-intake-simulation/sim-03",
-    isolation_retest = 14
-  )
-)
-
 theta_grid = list(
+  staff_prevalence = 0.05,
   intake_prevalence = c(0.01, 0.1),
   silent_rate = c(0.1, 0.4),
-  beta = c(1.0, 3.5),
-  sigma = c(1/2, 1/8),
-  gamma = c(1/5, 1/14),
-  test_sensitivity = list(rapid = c(0.30, 0.55), pcr = c(0.40, 0.5, 0.9, 0.1),
-    cxr_asymp = c(0.1, 0.2, 0.3), cxr_symp = c(0.40, 0.5, 0.65, 0.75))
-) %>% purrr::map(parameter_range, n = 4) %>%
-      expand_parameter_grid()
+  r0 = c(1.0, 3.0),
+  mean_latent_duration = c(2,5),
+  mean_disease_duration = c(10, 14),
+  test_sensitivity = list(rapid = c(0.30, 0.55), pcr = c(0.5, 0.7),
+    cxr_asymp = c(0.1, 0.2), cxr_symp = c(0.5, 0.65))
+) %>% purrr::map(simulator::parameter_range, n = 3) %>%
+      purrr::map(unique) %>%
+      simulator::expand_parameter_grid() %>%
+      simulator::expand_tibbles_nested() %>%
+      tidyr::unnest(test_sensitivity) %>%
+      unique() %>%
+      dplyr::mutate(
+        simulation_name = "grid-test-1",
+        simulation_id = simulator::pad(1:dplyr::n(), nchar(dplyr::n())), 
+        replicate_id = simulator::pad(1, 3),
+        n_intake_rate = 100,
+        n_staff = 3000,
+        n_steps = 365,
+        max_n_steps = 425,
+        seed = 33,
+        tb_rate = 0.001,
+        isolation_retest = 14,
+        output_root = workflow::build_dir(simulation_name, simulation_id, replicate_id)
+      ) %>%
+      purrr::pmap(list) 
 
-sim = simulation(theta, sim_init, sim_step, summarizer)
+  # specific sim job description here.
+  theta = theta_grid %>% purrr::map(~ simulator::parameters(
+      output = simulator::recipe(
+        output_path = fs::path(output_root),
+        log_path = fs::path(output_root, "logger")
+      ),
+      shared = simulator::recipe(
+        beta = r0 / (mean_disease_duration - mean_latent_duration),
+        sigma = 1 / mean_latent_duration,
+        gamma = 1 / (mean_disease_duration - mean_latent_duration),
+        intake_seed_rate = intake_prevalence * n_intake_rate,
+        staff_seed_rate = staff_prevalence * n_staff,
+        calculate_status = calculate_status,
+        calculate_isolation = calculate_isolation
+      ),
+      initialization = simulator::recipe(
+        time = 0
+      ),
+      running = simulator::recipe(
+        n_steps = n_steps
+      ),
+      inputs = .x 
+    ))
+
+#o = run_simulation(theta, env = .GlobalEnv, 
+#  initialization = sim_init, step = sim_step, writer = summarizer)
+sim = simulation(theta[[1]], sim_init, sim_step, summarizer)
 

@@ -71,9 +71,10 @@ simulation = function(
 #' @return same parameters as used
 #'
 #' @export
-run_simulation = function(parameters, env = .GlobalEnv) {
+run_simulation = function(parameters, env = .GlobalEnv, ...) {
   parallel::clusterExport(cl = get_cluster(), varlist = ls(env), envir = env)
-  parallel::clusterMap(cl = get_cluster(), fun = simulation, parameters = parameters)
+  parallel::clusterMap(cl = get_cluster(), fun = simulation, 
+                       parameters = parameters, MoreArgs = list(...))
   return(parameters)
 }
 
