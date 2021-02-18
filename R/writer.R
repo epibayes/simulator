@@ -40,7 +40,7 @@ writer = R6::R6Class(
                               replicate = .replicate, time = .time)
         q_args = purrr::map(q_args, ~ rlang::quo_set_env(.x, private$.sink))
         q_args[['variable']] = q_var_name
-        f = save_rds(!!!q_args)
+        f = rlang::exec(save_rds, !!!q_args)
         files = c(files, f)
       }
       return(files)
