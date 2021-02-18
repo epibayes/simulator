@@ -35,13 +35,12 @@ writer = R6::R6Class(
       files = character()
       var_names = ls(private$.sink)
       for (var_name in var_names) {
-        q_var_name = rlang::parse_quo(x = var_name, env = private$.sink)
-        q_args = rlang::quos(root = .output_path, simulation = .simulation, 
-                              replicate = .replicate, time = .time)
-        q_args = purrr::map(q_args, ~ rlang::quo_set_env(.x, private$.sink))
-        q_args[['variable']] = q_var_name
-        f = rlang::exec(save_rds, !!!q_args)
-        files = c(files, f)
+        file_name = save_file(var_name, private$.sink$.simulation, 
+                              private$.sink$.replicate, private$.sink$.time)
+        file_path = fs::path(private$.sink$.output_path, file_name)
+        val = rlang::env_get(private$.sink, nm = var_name)
+        saveRDS(val, file = file_path)
+        files = c(files, file_name)
       }
       return(files)
     },
