@@ -36,10 +36,11 @@ writer = R6::R6Class(
       var_names = ls(private$.sink)
       for (var_name in var_names) {
         q_var_name = rlang::parse_quo(x = var_name, env = private$.sink)
-        q_extra = rlang::quos(root = .output_path, simulation = .simulation, 
+        q_args = rlang::quos(root = .output_path, simulation = .simulation, 
                               replicate = .replicate, time = .time)
-        q_extra = purrr::map(q_extra, ~ rlang::quo_set_env(.x, private$.sink))
-        f = save_rds(!!q_var_name, !!!q_extra)
+        q_args = purrr::map(q_args, ~ rlang::quo_set_env(.x, private$.sink))
+        q_args[['variable']] = q_var_name
+        f = save_rds(!!!q_args)
         files = c(files, f)
       }
       return(files)
