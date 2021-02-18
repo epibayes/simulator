@@ -35,7 +35,8 @@ writer = R6::R6Class(
       files = character()
       var_names = ls(private$.sink)
       for (var_name in var_names) {
-        file_name = save_file(var_name, private$.sink$.simulation, 
+        q_var_name = rlang::parse_quo(x = var_name, env = private$.sink)
+        file_name = save_file(!!q_var_name, private$.sink$.simulation, 
                               private$.sink$.replicate, private$.sink$.time)
         file_path = fs::path(private$.sink$.output_path, file_name)
         val = rlang::env_get(private$.sink, nm = var_name)
