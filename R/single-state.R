@@ -123,6 +123,8 @@ state = R6::R6Class(
     #' @description
     #' Calculate the index (into the state vector) of specified state levels
     #' @param levels state levels whose position is retrieved
+    #' @param .strict if TRUE, check that levels exist in the current state, 
+    #'        FALSE by default.
     #' @return vector of indexes into the state vector
     which = function(levels, .strict = FALSE) {
       if (.strict) {

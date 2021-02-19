@@ -7,6 +7,12 @@ writer = R6::R6Class(
   public = list(
     #' @description
     #' Create a writer...
+    #'
+    #' @param setup recipe used to initialize the writer environment
+    #' @param summaries recipe used to summarize simulation data at each step,
+    #'             all named results will be saved. By default the recipe must
+    #'             include special parameters .time, .simulation,
+    #'             .replicate, and .output_path
     #' @return self
     initialize = function(setup = recipe(), summaries = recipe()) {
       private$.setup = setup
@@ -17,12 +23,19 @@ writer = R6::R6Class(
     #'
     #' Set up the writer for a specific task, the enviroment must provide
     #' all the specific parameters used
+    #'
+    #' @param bottom bottom of simulation environment stack 
+    #' @param top top of simulation environment stack 
     setup = function(bottom, top) {
       private$.setup$execute(bottom, top, private$.root)
     },
     #' @description
     #'
     #' Record data from the environment after applying summaries
+    #'
+    #' @param bottom bottom of simulation environment stack 
+    #' @param top top of simulation environment stack 
+    #' @return list of files that were used to record the data
     record = function(bottom, top) {
       private$.summaries$execute(bottom, top, private$.sink)
       files = self$save()
@@ -45,6 +58,11 @@ writer = R6::R6Class(
       }
       return(files)
     },
+    #' @description
+    #'
+    #' Method runs at the end of a simulation
+    #'
+    #' @param ... generic args, not implemented
     finalize = function(...) {}
   ),
   private = list(
@@ -54,6 +72,7 @@ writer = R6::R6Class(
     .sink = rlang::env()
   ),
   active = list(
+    #' @field env return the environment where data is copied prior to saving.
     env = function() private$.sink
   )
 )

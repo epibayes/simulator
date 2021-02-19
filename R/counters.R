@@ -11,6 +11,8 @@ ctr = R6::R6Class(classname = 'counter',
     initialize = function(i = 0L) {
       private$.counter = as.integer(i)
     },
+    #' @description
+    #' Increment the counter explicitly
     incr = function() {
       last = private$.counter
       private$.counter = private$.counter + 1L

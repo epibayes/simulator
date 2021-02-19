@@ -8,6 +8,13 @@ Write that records simulation state
 
 Write that records simulation state
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{env}}{return the environment where data is copied prior to saving.}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -28,6 +35,18 @@ Create a writer...
 \if{html}{\out{<div class="r">}}\preformatted{writer$new(setup = recipe(), summaries = recipe())}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{setup}}{recipe used to initialize the writer environment}
+
+\item{\code{summaries}}{recipe used to summarize simulation data at each step,
+all named results will be saved. By default the recipe must
+include special parameters .time, .simulation,
+.replicate, and .output_path}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 self
 }
@@ -42,6 +61,15 @@ all the specific parameters used
 \if{html}{\out{<div class="r">}}\preformatted{writer$setup(bottom, top)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{bottom}}{bottom of simulation environment stack}
+
+\item{\code{top}}{top of simulation environment stack}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-record"></a>}}
@@ -52,6 +80,18 @@ Record data from the environment after applying summaries
 \if{html}{\out{<div class="r">}}\preformatted{writer$record(bottom, top)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{bottom}}{bottom of simulation environment stack}
+
+\item{\code{top}}{top of simulation environment stack}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+list of files that were used to record the data
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-save"></a>}}
@@ -67,10 +107,18 @@ Save recorded data...
 \if{html}{\out{<a id="method-finalize"></a>}}
 \if{latex}{\out{\hypertarget{method-finalize}{}}}
 \subsection{Method \code{finalize()}}{
+Method runs at the end of a simulation
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{writer$finalize(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{generic args, not implemented}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

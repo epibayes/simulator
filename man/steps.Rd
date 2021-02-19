@@ -8,6 +8,13 @@ Records a set of steps to apply to a simulation later
 
 Records a set of steps to apply to a simulation later
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{n_steps}}{Number of steps in the recipe}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -48,7 +55,11 @@ Execute the stored steps in the pre-specified environment
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{environment to execute in}
+\item{\code{bottom}}{other end of environment stack to execute in}
+
+\item{\code{top}}{one end of environment stack to execute in}
+
+\item{\code{target}}{environment to place recipe results in (if named).}
 }
 \if{html}{\out{</div>}}
 }

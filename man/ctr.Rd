@@ -46,6 +46,7 @@ Create a counter
 \if{html}{\out{<a id="method-incr"></a>}}
 \if{latex}{\out{\hypertarget{method-incr}{}}}
 \subsection{Method \code{incr()}}{
+Increment the counter explicitly
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ctr$incr()}\if{html}{\out{</div>}}
 }

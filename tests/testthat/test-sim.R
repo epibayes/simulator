@@ -34,7 +34,8 @@ testthat::test_that("Simulation parameters list parent-child relationships work 
 testthat::test_that("Simulation function runs a simple simulation.", {
   theta = parameters(
     output = recipe(
-      output_path = fs::file_temp(), log_file = fs::file_temp(),
+      .output_path = fs::file_temp(), log_file = fs::file_temp(),
+      dir.create(.output_path, recursive = TRUE)
     ),
     shared = recipe(
       n_total = rpois(n = 1, lambda = n_total_rate),
@@ -116,14 +117,15 @@ testthat::test_that("Simulation function runs a simple simulation.", {
   basic_writer = writer$new(
     setup = recipe(
       log_file = log_file,
-      output_path = output_path,
+      .output_path = .output_path,
       logger_dir = log_file %>% fs::path_dir(),
       logger::log_appender(logger::appender_file(log_file))
     ),
     summaries = recipe(
-      time = time,
-      simulation_id = simulation_id,
-      replicate_id = replicate_id,
+      .time = time,
+      .simulation = simulation_id,
+      .replicate = replicate_id,
+      .output_path = .output_path,
       outcomes = tibble::tibble(
         time = time,
         n_susceptible = n_susceptible,
@@ -131,13 +133,6 @@ testthat::test_that("Simulation function runs a simple simulation.", {
         n_deaths = n_deaths, n_dead = n_dead,
         n_recoveries = n_recoveries, n_recovered = n_recovered,
         p_infection = p_infection)
-    ),
-    save = recipe(
-      file = fs::path(output_path, paste0("replicate-", replicate_id, 
-                                          "--simulation-", simulation_id, 
-                                          "--time-", time, "--outcomes.rds")),
-      file %>% fs::path_dir() %>% fs::dir_create(),
-      saveRDS(outcomes, file = file)
     )
   )
 

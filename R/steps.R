@@ -14,7 +14,9 @@ steps = R6::R6Class(
     },
     #' @description
     #' Execute the stored steps in the pre-specified environment
-    #' @param data environment to execute in
+    #' @param top one end of environment stack to execute in
+    #' @param bottom other end of environment stack to execute in
+    #' @param target environment to place recipe results in (if named).
     #' @return modified environment
     execute = function(
       bottom = rlang::env(), 
@@ -42,6 +44,7 @@ steps = R6::R6Class(
     .steps = rlang::enquos()
   ),
   active = list(
+    #' @field n_steps Number of steps in the recipe
     n_steps = function() length(private$.steps)
   )
 )

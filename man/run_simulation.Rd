@@ -4,7 +4,7 @@
 \alias{run_simulation}
 \title{Run a full set of simulations on the given cluster.}
 \usage{
-run_simulation(parameters, env = .GlobalEnv)
+run_simulation(parameters, env = .GlobalEnv, ...)
 }
 \arguments{
 \item{parameters, }{need to describe all info required for sim}

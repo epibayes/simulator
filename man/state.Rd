@@ -226,6 +226,9 @@ Calculate the index (into the state vector) of specified state levels
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{levels}}{state levels whose position is retrieved}
+
+\item{\code{.strict}}{if TRUE, check that levels exist in the current state,
+FALSE by default.}
 }
 \if{html}{\out{</div>}}
 }

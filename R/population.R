@@ -270,6 +270,9 @@ population = R6::R6Class(
       match = purrr::map(name_vec, ~ class(rlang::env_get(data, .x))) %>%
         purrr::map_lgl( ~ !any('state' %in% .x))
       cov_name_vec = name_vec[match]
+      cov_name_vec = cov_name_vec[cov_name_vec != 'id']
+      cov_name_vec = cov_name_vec[cov_name_vec != 'group']
+      cov_name_vec = cov_name_vec[cov_name_vec != 'time']
       return(cov_name_vec)
     },
     .count_units = function(data) {
