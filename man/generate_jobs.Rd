@@ -5,33 +5,23 @@
 \title{Turn inputs into a set of job descriptors}
 \usage{
 generate_jobs(
-  env,
-  modifiers,
-  n_replicates,
-  output_root = "output",
-  tests = test_factory,
-  pickers = picker_factory
+  parameters = list(),
+  initialization = recipe(),
+  step = recipe(),
+  writer = list(factory = make_writer, setup = recipe(), summaries = recipe())
 )
 }
 \arguments{
-\item{env}{an environment where constant parameters are defined}
+\item{parameters}{parameters defining the simulation}
 
-\item{modifiers}{a list of tibbles where per-scenario parameters are defined}
+\item{initialization}{recipe for initializing simulation}
 
-\item{n_replicates}{number of replicates to create per set}
+\item{step}{recipe for each simulation step}
 
-\item{output_root}{location to output results to.  There is a specific
-directory structure implied under this location (it will be created).}
-
-\item{tests}{a factory function for creating testing functions for each set
-by default uses functions from the package}
-
-\item{pickers}{a factory function for createing picker functions for each
-set, by default uses factory function from the package}
+\item{writer}{list with elements anmed 'factory', 'setup', 'summaries'}
 }
 \value{
-a list of list with a descriptor of sets, sets with replicates, and
-a list of jobs to run
+a list ...
 }
 \description{
 Turn inputs into a set of job descriptors

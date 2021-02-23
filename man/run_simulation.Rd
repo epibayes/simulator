@@ -4,12 +4,15 @@
 \alias{run_simulation}
 \title{Run a full set of simulations on the given cluster.}
 \usage{
-run_simulation(parameters, env = .GlobalEnv, ...)
-}
-\arguments{
-\item{parameters, }{need to describe all info required for sim}
-
-\item{env}{environment to pull additional variables from for each sim node.}
+run_simulation(
+  parameters,
+  initialization,
+  step,
+  writer,
+  exports,
+  .env = .GlobalEnv,
+  setup = recipe()
+)
 }
 \value{
 same parameters as used

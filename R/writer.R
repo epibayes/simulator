@@ -1,4 +1,13 @@
 
+#' Generate a writer
+#'
+#' @export
+make_writer = function(setup = recipe(), summaries = recipe()) {
+  w = writer$new(setup = setup, summaries = summaries)
+  return(w)
+}
+
+
 #' Write that records simulation state 
 #'
 #' @export
@@ -76,7 +85,6 @@ writer = R6::R6Class(
     env = function() private$.sink
   )
 )
-
 
 
 

@@ -66,15 +66,25 @@ simulation = function(
 
 #' Run a full set of simulations on the given cluster.
 #'
-#' @param parameters, need to describe all info required for sim
-#' @param env environment to pull additional variables from for each sim node.
 #' @return same parameters as used
 #'
 #' @export
-run_simulation = function(parameters, env = .GlobalEnv, ...) {
-  parallel::clusterExport(cl = get_cluster(), varlist = ls(env), envir = env)
+run_simulation = function(
+  parameters, 
+  initialization, 
+  step, 
+  writer, 
+  exports, 
+  .env = .GlobalEnv, 
+  setup = recipe()
+) {
+  writers = purrr::map(1:length(parameters), ~ simulator::make_writer(writer$setup, writer$summaries))
+  parallel::clusterExport(cl = get_cluster(), varlist = exports, envir = .env)
+  parallel::clusterEvalQ(cl = get_cluster(), 
+    expr = setup$execute(rlang::caller_env(), rlang::caller_env())) 
   parallel::clusterMap(cl = get_cluster(), fun = simulation, 
-                       parameters = parameters, MoreArgs = list(...))
+    parameters = parameters, writer = writers, 
+    MoreArgs = list(initialization = initialization, step = step))
   return(parameters)
 }
 
