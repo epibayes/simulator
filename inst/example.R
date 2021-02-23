@@ -101,13 +101,6 @@
         n_deaths = n_deaths, n_dead = n_dead,
         n_recoveries = n_recoveries, n_recovered = n_recovered,
         p_infection = p_infection)
-    ),
-    save = recipe(
-      file = fs::path(output_path, paste0("replicate-", replicate_id, 
-                                          "--simulation-", simulation_id, 
-                                          "--time-", pad(time, 5), "--outcomes.rds")),
-      file %>% fs::path_dir() %>% fs::dir_create(),
-      saveRDS(outcomes, file = file)
     )
   )
 
