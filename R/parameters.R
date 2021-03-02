@@ -27,15 +27,26 @@ parameter_range = function(x, n) {
   }
   i = 1
   pts = x
+  interp_points = n/length(pts)
+  str(interp_points)
   while(length(pts) < n) {
     if (i > length(pts)) {
       i = 1
     }
+    ## TO FIX: make so there are equal numbers of new points between each number in x
+    
     new_pts = mean(pts[i:(i + 1)])
+
+    # new_pts = approx(c(pts[i],0), c(pts[i+1],0), method="constant", n=interp_points, rule=2, f=0, ties=mean )
+    # str(new_pts)
+    
+    #add to pts and +1 iterate
     pts = c(pts, new_pts) 
+    # str(pts)
     i = i + 1
   }
   pts = sort(pts) %>% unique()
+  # str("newlysorted", pts)
   return(pts)
 }
 
