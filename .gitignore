@@ -1,2 +1,4 @@
 .DS_Store
-.Rhistory(base) 
+.Rhistory
+~/R/.Rhistory
+~/tests/.DS_Store
