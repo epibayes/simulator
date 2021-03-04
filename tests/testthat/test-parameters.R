@@ -12,7 +12,12 @@ testthat:: test_that("test parameter_range function",{
   n1 = 3
   n2 = 5
   n3 = 10
+  oneandthree = c(1,3)
+  onetwothree = c(1, 2, 3)
+  onetothree = c(1,5/3,7/3,3)
   ########
+  
+  
   
   #if the length of the list passed to parameter_range is 1, the result
   #of parameter_range is just the contents of the list repeated n times
@@ -29,6 +34,11 @@ testthat:: test_that("test parameter_range function",{
   #testing that all numbers fall between the smallest and largest numbers
   testthat::expect_true(all(between(parameter_range(x2,n3), 1, 20)))
   
+  #test that if you pass in 1 and 3 and ask for 3 numbers, you get 1, 2, and 3
+  testthat::expect_equal(parameter_range(oneandthree, 3), onetwothree)
+  
+  #test that if you pass in 1 and 3 and ask for 4 numbers, you get 1, 1.6, 2.3, and 3
+  testthat::expect_equal(parameter_range(oneandthree,4), onetothree)
 })
 
 testthat::test_that("test parameter grid expansion function", {
@@ -57,9 +67,9 @@ testthat::test_that("test parameter grid expansion function", {
   )
   sm_dbls = sm_dbls %>% expand(Var1,Var2) %>% 
     arrange(Var2)
+
   ##########
-  
-  
+
   #test that the results are tibbles
   testthat::expect_s3_class(expand_parameter_grid(small_n_ls), "tbl")
   testthat::expect_s3_class(expand_parameter_grid(small_ch_ls),"tbl")
@@ -73,8 +83,7 @@ testthat::test_that("test parameter grid expansion function", {
   
   #test that expand_parameter_grid result is the same as hard-coded tibble
   testthat::expect_setequal(expand_parameter_grid(small_n_ls)[[1]], sm_tibb[[1]])
-  testthat::expect_setequal(expand_parameter_grid(small_n_ls[[2]]), sm_tibb[[2]])
   testthat::expect_setequal(expand_parameter_grid(small_dbl_ls)[[1]], sm_dbls[[1]])
-  testthat::expect_setequal(expand_parameter_grid(small_dbl_ls)[[2]], sm_dbls[[2]])
   
 })
+
