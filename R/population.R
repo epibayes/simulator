@@ -95,11 +95,13 @@ population = R6::R6Class(
     #' @param levels vector of levels (of any state) to drop
     #' @return copy of self, with only specified rows
     bleb = function(rows, levels) {
-      if (missing(rows) & !missing(levels)) {
+      if (missing(rows) && !missing(levels)) {
         return(private$.bleb_levels(levels))
       } else if (!missing(rows)) {
         return(private$.bleb_rows(rows))
-      } 
+      } else if (missing(rows) && missing(levels)) {
+        return(private$.bleb_rows(numeric()))
+      }
       stop("One and only one of 'rows' and 'levels' must be specified'")
     },
     #' @description 
@@ -108,11 +110,16 @@ population = R6::R6Class(
     #' @param levels vector of levels (of any state) to drop
     #' @return self, without specified rows
     drop = function(rows, levels) {
-      if (missing(rows) & !missing(levels)) {
+      if (self$n_units == 0 || self$n_states == 0) {
+        return(self)
+      }
+      if (missing(rows) && !missing(levels)) {
         return(private$.drop_levels(levels))
       } else if (!missing(rows)) {
         return(private$.drop_rows(rows))
-      } 
+      } else if (missing(rows) && missing(levels)) {
+        return(self)
+      }
       stop("One and only one of 'rows' and 'levels' must be specified'")
     },
     #' @description
@@ -120,6 +127,9 @@ population = R6::R6Class(
     #' @param ... expressions
     #' @return self boolean vector with one value per row
     matches = function(...) {
+      if (self$n_units == 0 || self$n_states == 0) {
+        return(logical(length = 0))
+      }
       private$.sync()
       dm = rlang::new_data_mask(bottom = private$.data, top = private$.data)
       test = rlang::enquos(...)
@@ -133,6 +143,9 @@ population = R6::R6Class(
     #' @param ... expressions
     #' @return self, for chaining
     mutate = function(...) {
+      if (self$n_units == 0 || self$n_states == 0) {
+        return(self)
+      }
       private$.sync()
       dm = rlang::new_data_mask(bottom = private$.data, top = private$.data)
       exprs = rlang::enquos(...)
@@ -155,6 +168,13 @@ population = R6::R6Class(
     #'        the value is not 'env'
     #' @return list or enviornment with evaluated expressions
     summarize = function(..., .return_type = 'env') {
+      if (self$n_units == 0 || self$n_states == 0) {
+        if (isTRUE(.return_type == 'list')) {
+          return(as.list(rlang::child_env(private$.data)))
+        } else {
+          return(rlang::child_env(private$.data))
+        }
+      }
       private$.sync()
       env = rlang::child_env(private$.data)
       dm = rlang::new_data_mask(bottom = env, top = private$.data)
@@ -165,6 +185,8 @@ population = R6::R6Class(
       }
       if (.return_type == 'env') {
         return(env)
+      } else if (.return_type == 'tibble') {
+        return(tibble::tibble(as.list(env)))
       } else {
         return(as.list(env))
       }
@@ -212,7 +234,7 @@ population = R6::R6Class(
     },
     .bleb_rows = function(rows) {
       other = self$clone(deep = TRUE)
-      local_rows = 1:private$.n_units %>% purrr::discard( ~ .x %in% rows)
+      local_rows = seq_len(private$.n_units) %>% purrr::discard( ~ .x %in% rows)
       other$drop(local_rows)
       self$drop(rows)
       return(other)
