@@ -27,44 +27,40 @@ parameter_range = function(x, n) {
   }
   
   pts = find_betweens(x,n)
-  # i = 1
-  # pts = x
-  # while (length(pts) < n) {
-  #   if (i > length(pts)) {
-  #     i = 1
-  #   }
-  #   new_pts = mean(pts[i:(i + 1)])
-  #   pts = c(pts, new_pts) 
-  #   i = i + 1
-  # }
+
   pts = sort(pts) %>% unique()
   return(pts)
 }
 
-#' x is a list of numbers, n is number of total number of numbers in final list.
-#' find an equal number of equidistant points between each number in x 
-#' to get a total n number of numbers.
-#' any extra points will be made where the interval (distance between two #s in x)
-#' is largest.
+#' Finding numbers between
 
+#' find an equal number of equidistant points between each 
+#' number in x to get a total n number of numbers.
+#' any extra points will be made where the interval 
+#' (distance between two #s in x) is largest.
+#'
+#' @param x a vector of numbers
+#' @param n number of total points
+#' @return a vector of length n
+#' 
 #' @export
 find_betweens = function(x, n) {
-  #' first, define what an interval is:
-  an_Interval <- setClass("an_Interval", slots = c("upper", "lower", "intvl", "counter"))
+  # an_Interval <- setClass("an_Interval", slots = c("upper", "lower", "intvl", "counter"))
   
-  #' initialize a list to store intervals (distance between consecutive numbers in list x)
+  #' initialize a list to store intervals 
+  #' (distance between consecutive numbers in list x)
   list_intvs <- list()
   
   #' also initialize indexes so we can index into the list x of numbers
   lwr = 1
   upr = 2
   
-  #' sort the incoming list x, then for each number in x, create
-  #' an instance of an_interval
+  #' sort the incoming list x, then for each number in 
+  #' x, create an instance of an_interval
   x <- sort(x)
   
   while (upr <= length(x)){
-    list_intvs[[lwr]] <- new("an_Interval", upper = x[[upr]], lower = x[[lwr]], intvl = x[[upr]] - x[[lwr]], counter= 0 )
+    list_intvs[[lwr]] <- an_Interval$new(upper = x[[upr]], lower = x[[lwr]], intvl = x[[upr]] - x[[lwr]], counter= 0 )
     upr = upr + 1
     lwr = lwr + 1
   }
@@ -73,7 +69,7 @@ find_betweens = function(x, n) {
   #' between upper $ lower) to the largest interval
   #' first define a function that returns the interval
   diffs <- function(each){
-    return(each@intvl)
+    return(each$intvl)
   }
   
   #' then, sort the list using the value at intvls
@@ -91,7 +87,7 @@ find_betweens = function(x, n) {
   #' counter indicates how many values will go in the increment
   while (to_add > 0){
     #' increment the counter
-    list_intvs[[indx]]@counter = list_intvs[[indx]]@counter + 1
+    list_intvs[[indx]]$increment_counter()
 
     #' move index left and loop back to the end of the list
     #' once index reaches the start of the list
@@ -110,20 +106,20 @@ find_betweens = function(x, n) {
   #' determine what the new numbers will be
   for (ivl in list_intvs){
     #' find the increment (mean)
-    inc = (ivl@upper - ivl@lower)/(ivl@counter + 1)
+    inc = (ivl$upper - ivl$lower)/(ivl$counter + 1)
     
     #' initialize a new counter to compare against
     #' interval objects' counter field
     j = 0
     
-    while (j < ivl@counter){
+    while (j < ivl$counter){
       #' add the increment to the lower number j+1 times to get
       #' numbers between lower and upper, then add to final
-      new_num = ivl@lower + (j+1) * inc
+      new_num = ivl$lower + (j+1) * inc
       final = append(final, new_num)
       
       #' increment counter j and lst_pos
-      j = j+ 1
+      j = j + 1
     }
   }
   #' add original list numbers to final, then sort everything
@@ -132,11 +128,6 @@ find_betweens = function(x, n) {
   final = sort(final)
   return(final)
 }
-
-
-#' FIXME: Bro, write the tests don't just leave this here
-#purrr::map(1:10, ~ parameter_range(c(0, 5, 10), .x))
-#purrr::map(1:10, ~ parameter_range(c(0, 5, 10), .x)) %>% purrr::map(length)
 
 #' Classes used to indicate categories
 #'

@@ -3,8 +3,7 @@
 \docType{data}
 \name{categorical_classes}
 \alias{categorical_classes}
-\title{FIXME: Bro, write the tests don't just leave this here
-Classes used to indicate categories}
+\title{Classes used to indicate categories}
 \format{
 An object of class \code{character} of length 3.
 }
@@ -12,7 +11,6 @@ An object of class \code{character} of length 3.
 categorical_classes
 }
 \description{
-FIXME: Bro, write the tests don't just leave this here
 Classes used to indicate categories
 }
 \keyword{datasets}

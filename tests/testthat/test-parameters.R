@@ -49,6 +49,7 @@ testthat::test_that("test parameter grid expansion function", {
   small_ls_ls = list(list(1,2,3),list(3,4,5))
   large_n_ls = list(c(1,2,3,4), c(5,6,7,8), c(9,10,11,12), c(13,14,15,16))
   small_dbl_ls = list(c(1.1,2.2,3.3), c(4.4,5.5,6,6))
+  
   ##########
   ##########
   ##grid for small_n_ls
