@@ -45,8 +45,6 @@ parameter_range = function(x, n) {
 #' 
 #' @export
 find_betweens = function(x, n) {
-  # an_Interval <- setClass("an_Interval", slots = c("upper", "lower", "intvl", "counter"))
-  
   #' initialize a list to store intervals 
   #' (distance between consecutive numbers in list x)
   list_intvs <- list()
@@ -60,13 +58,14 @@ find_betweens = function(x, n) {
   x <- sort(x)
   
   while (upr <= length(x)){
-    list_intvs[[lwr]] <- an_Interval$new(upper = x[[upr]], lower = x[[lwr]], intvl = x[[upr]] - x[[lwr]], counter= 0 )
+    list_intvs[[lwr]] <- an_Interval$new(upper = x[[upr]], lower = x[[lwr]], 
+                                         intvl = x[[upr]] - x[[lwr]], counter= 0 )
     upr = upr + 1
     lwr = lwr + 1
   }
   
   #' sort the intervals from smallest interval (smallest difference 
-  #' between upper $ lower) to the largest interval
+  #' between upper & lower) to the largest interval
   #' first define a function that returns the interval
   diffs <- function(each){
     return(each$intvl)
@@ -151,6 +150,9 @@ categorical_classes = c('numeric', 'integer', 'character')
 #'
 #' @export
 expand_parameter_grid = function(x) {
+  if(is.null(names(x))){
+    rlang::abort("all elements of x must be named")
+  }
   x_ready = x %>% 
     purrr::keep(~ class(.x) %in% categorical_classes) %>%
     purrr::lift_dl(expand.grid)(stringsAsFactors = FALSE) %>%
@@ -158,15 +160,20 @@ expand_parameter_grid = function(x) {
   x_other_names = x %>% 
     purrr::discard(~ class(.x) %in% categorical_classes) %>%
     names()
-  if (length(x_other_names) == 0) {
-    return(x_ready)
-  } else {
-    x_ready = list(core = x_ready)
-  }
   x_other = x %>% 
     purrr::discard(~ class(.x) %in% categorical_classes) %>%
     purrr::map(expand_parameter_grid) %>%
     rlang::set_names(x_other_names)
+  
+  if (length(x_other_names) == 0) {
+    return(x_ready)
+  } else if (length(x_ready) !=0) {
+      x_ready = list(core = x_ready)
+  } else {
+    x_ready = x_other[1]
+    x_other = x_other[-1]
+  }
+
   for (i in seq_along(x_other)) {
     cn = x_other_names[[i]]
     x_ready[[cn]] = x_other[[i]]

@@ -44,11 +44,19 @@ testthat:: test_that("test parameter_range function",{
 testthat::test_that("test parameter grid expansion function", {
   ##########
   ##lists of lists used for testing purposes
-  small_n_ls = list(c(1,2,3), c(4,5,6))
-  small_ch_ls = list(c("1","2","3"), c("4","5","6"))
-  small_ls_ls = list(list(1,2,3),list(3,4,5))
-  large_n_ls = list(c(1,2,3,4), c(5,6,7,8), c(9,10,11,12), c(13,14,15,16))
-  small_dbl_ls = list(c(1.1,2.2,3.3), c(4.4,5.5,6,6))
+  small_n_ls = list(Var1 = c(1,2,3), Var2 = c(4,5,6))
+  small_unnamedn_ls = list(c(1,2,3), c(4,5,6))
+  
+  small_ch_ls = list(char1 = c("1","2","3"), char2 = c("4","5","6"))
+  small_unnamedch_ls = list(c("1","2","3"), c("4","5","6"))
+  
+  small_ls_ls = list(george = list(a = 1,b = 2,c = 3), rachel = list(d = 3,e = 4,f =5))
+  
+  small_unnamedls_ls = list(list(1,2,3), list(3,4,5))
+  
+  large_n_ls = list(var1 = c(1,2,3,4), var2 =c(5,6,7,8), var3 = c(9,10,11,12), var4 = c(13,14,15,16))
+  
+  small_dbl_ls = list(Var1 = c(1.1,2.2,3.3), Var2 = c(4.4,5.5,6,6))
   
   ##########
   ##########
@@ -72,19 +80,27 @@ testthat::test_that("test parameter grid expansion function", {
   ##########
 
   #test that the results are tibbles
-  testthat::expect_s3_class(expand_parameter_grid(small_n_ls), "tbl")
+  testthat::expect_s3_class(expand_parameter_grid(small_n_ls),"tbl")
   testthat::expect_s3_class(expand_parameter_grid(small_ch_ls),"tbl")
   testthat::expect_s3_class(expand_parameter_grid(small_dbl_ls),"tbl")
   
   #test that tibbles of the correct size are created when given a list of number vectors
   testthat::expect_vector(expand_parameter_grid(small_n_ls),size=9)
   testthat::expect_vector(expand_parameter_grid(small_ch_ls),size=9)
-  testthat::expect_vector(expand_parameter_grid(small_ls_ls), size=0)
+  
+  #####test behavior needs to be updated
+  # testthat::expect_vector(expand_parameter_grid(small_ls_ls),size=)
+  
   testthat::expect_vector(expand_parameter_grid(large_n_ls),size=256)
   
   #test that expand_parameter_grid result is the same as hard-coded tibble
   testthat::expect_setequal(expand_parameter_grid(small_n_ls)[[1]], sm_tibb[[1]])
   testthat::expect_setequal(expand_parameter_grid(small_dbl_ls)[[1]], sm_dbls[[1]])
+  
+  #test that unnamed x's return errors
+  testthat::expect_error(expand_parameter_grid(small_unnamedn_ls))
+  testthat::expect_error(expand_parameter_grid(small_unnamedch_ls))
+  testthat::expect_error(expand_parameter_grid(small_unnamedls_ls))
   
 })
 

@@ -15,5 +15,4 @@ an_Interval <- R6Class("an_Interval",
                          increment_counter = function(){
                            self$counter <- self$counter + 1
                          }
-                         
                        ))
