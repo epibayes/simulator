@@ -47,7 +47,7 @@ population = R6::R6Class(
       }
       private$.n_units = private$.count_units(private$.data)
       private$.id = seq_len(self$n_units) %>% 
-        purrr::map_int(~ private$.counter$increment)
+        purrr::map_int(~ private$.counter$incr())
     },
     #' @description
     #' Get the value of the named population variable for all individuals
@@ -186,7 +186,7 @@ population = R6::R6Class(
       if (.return_type == 'env') {
         return(env)
       } else if (.return_type == 'tibble') {
-        return(tibble::tibble(as.list(env)))
+        return(purrr::lift_dl(tibble::tibble)(as.list(env)))
       } else {
         return(as.list(env))
       }
