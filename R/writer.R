@@ -63,7 +63,7 @@ writer = R6::R6Class(
         file_path = fs::path(private$.sink$.output_path, file_name)
         val = rlang::env_get(private$.sink, nm = var_name)
         saveRDS(val, file = file_path)
-        files = c(files, file_name)
+        files = c(files, file_path)
       }
       private$.files = c(private$.files, files)
       return(files)
