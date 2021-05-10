@@ -65,6 +65,7 @@ writer = R6::R6Class(
         saveRDS(val, file = file_path)
         files = c(files, file_name)
       }
+      private$.files = c(private$.files, files)
       return(files)
     },
     #' @description
@@ -78,11 +79,13 @@ writer = R6::R6Class(
     .setup = recipe(),
     .summaries = recipe(),
     .root = rlang::env(),
-    .sink = rlang::env()
+    .sink = rlang::env(),
+    .files = character()
   ),
   active = list(
     #' @field env return the environment where data is copied prior to saving.
-    env = function() private$.sink
+    env = function() private$.sink,
+    files = function() private$.files
   )
 )
 
