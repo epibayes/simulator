@@ -79,6 +79,9 @@ population = R6::R6Class(
       if (self$time != x$time) {
         stop("Times of populations must match to absorb.")
       }
+      if (x$n_units == 0 || x$n_states == 0) {
+        return(self)
+      }
       private$.match_components(x)
       for (sn in self$states) {
         self$get(sn)$bind(x$get(sn))
