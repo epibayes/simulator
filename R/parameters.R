@@ -11,39 +11,72 @@
 #'
 #' @export
 parameter_range = function(x, n) {
+  if (length(x) == 0) {
+    stop("Must provide at least one default parameter value.")
+  }
   if (class(x) == 'list') {
     x = purrr::map(x, parameter_range, n = n)
     return(x)
   }
   x = sort(x) %>% unique()
-  if (length(x) == 0) {
-    stop("Must provide at least one default parameter value.")
-  }
   if (length(x) == 1) {
     return(rep(x, n))
   }
   if (length(x) >= n) {
     return(x)
   }
-  i = 1
-  pts = x
-  while(length(pts) < n) {
-    if (i > length(pts)) {
-      i = 1
-    }
-    new_pts = mean(pts[i:(i + 1)])
-    pts = c(pts, new_pts) 
-    i = i + 1
-  }
+  
+  pts = parameter_range_impl(x,n)
+
   pts = sort(pts) %>% unique()
   return(pts)
 }
 
-#' FIXME: Bro, write the tests don't just leave this here
-#purrr::map(1:10, ~ parameter_range(c(0, 5, 10), .x))
-#purrr::map(1:10, ~ parameter_range(c(0, 5, 10), .x)) %>% purrr::map(length)
+#' Insert numbers between vector values until the vector contains
+#' n values
+#'
+#' find an equal number of equidistant points between each 
+#' pair of numbers in x to get a total n number of numbers.
+#' any extra points will be made where the interval 
+#' (distance between two #s in x) is largest.
+#'
+#' @param x a vector of numbers
+#' @param n number of total points
+#' @return a vector of length n
+#' 
+parameter_range_impl = function(x, n) {
+  x = sort(x)
+  d = diff(x)
+  n_intervals = length(d)
 
-#' Classes used to indicate categories
+  intervals = purrr::map2(x[1:n_intervals], d, 
+    ~ Interval$new(upper = .x + .y, lower = .x, length = .y)) 
+
+  #' determine where the new numbers will occur
+  n_more_pts = n - length(intervals) - 1
+  index = length(intervals)
+  while (n_more_pts > 0){
+    intervals[[index]]$increment_counter()
+    if (index == 1){
+      index = length(intervals)
+    } else {
+      index = index - 1
+    }
+    n_more_pts = n_more_pts - 1
+  }
+
+  #' determine and insert values of new numbers
+  for (ivl in intervals){
+    increment = ivl$length / (ivl$counter + 1)
+    for (j in 1:ivl$counter) {
+      x = x %>% c(ivl$lower + j * increment)
+    }
+  }
+  x = sort(x)
+  return(x)
+}
+
+#' Classes used to indicate categories in the context of parameters
 #'
 #' @name categorical_classes
 #'
@@ -65,6 +98,9 @@ categorical_classes = c('numeric', 'integer', 'character')
 #'
 #' @export
 expand_parameter_grid = function(x) {
+  if(is.null(names(x))){
+    rlang::abort("all elements of x must be named")
+  }
   x_ready = x %>% 
     purrr::keep(~ class(.x) %in% categorical_classes) %>%
     purrr::lift_dl(expand.grid)(stringsAsFactors = FALSE) %>%
@@ -81,6 +117,7 @@ expand_parameter_grid = function(x) {
     purrr::discard(~ class(.x) %in% categorical_classes) %>%
     purrr::map(expand_parameter_grid) %>%
     rlang::set_names(x_other_names)
+  
   for (i in seq_along(x_other)) {
     cn = x_other_names[[i]]
     x_ready[[cn]] = x_other[[i]]
