@@ -329,7 +329,7 @@ expand_parameters = function(..., recipes, n_batches = 50) {
       expand_parameter_grid() %>% 
       flatten_tibble_list() %>% 
       expand_tibbles_nested() %>% 
-      flatten_tibble()
+      flatten_tibble() %>%
       unique()
   }
   parameter_grid = purrr::lift_dl(dplyr::bind_rows)(args) %>%
