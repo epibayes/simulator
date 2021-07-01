@@ -1,42 +1,4 @@
 
-#' Combine environments in a hierarchy for passing simulation data
-#'
-#' @param output recipe used for defining output location parameters
-#' @param shared recipe used for defining shared parameters
-#' @param initialization recipe used for defining init parameters
-#' @param running recipe used for defining run-time parameters
-#' @param inputs list of variables passed in to all steps
-#' @param .parent dev-side hook, parent of everything.
-#' @return list of environments with specified nesting
-#'
-#' @export
-parameters = function(
-  output = recipe(),
-  shared = recipe(),
-  initialization = recipe(),
-  running = recipe(),
-  inputs = list(), 
-  .parent = rlang::env()
-) {
-  root_ = rlang::new_environment(parent = .parent)
-  purrr::imap(inputs, ~ rlang::env_bind(root_, !!.y := .x))
-  output_ = rlang::new_environment(parent = root_)
-  shared_ = rlang::new_environment(parent = output_)
-  initialization_ = rlang::new_environment(parent = shared_)
-  running_ = rlang::new_environment(parent = shared_)
-  thetas = list(
-    root = root_,
-    output = output_, 
-    shared = shared_, 
-    initialization = initialization_, 
-    running = running_)
-  output$execute(output_, root_)
-  shared$execute(shared_, root_)
-  initialization$execute(initialization_, root_)
-  running$execute(running_, root_)
-  return(thetas)
-}
-
 #' Run a simulation for a single set of parameters
 #'
 #' @param parameters see `parameters` function
