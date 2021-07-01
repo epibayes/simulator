@@ -4,7 +4,7 @@
 \alias{expand_parameter_grid}
 \title{Expand parameter grid}
 \usage{
-expand_parameter_grid(x)
+expand_parameter_grid(x, stub = "", sep = "__")
 }
 \arguments{
 \item{x}{a list, optionally with nested lists, all named elements,

@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "krzysztof@mostek.io",
            comment = c(ORCID = "0000-0001-7587-355X"))
-Description: Record simulations in R recipes (series of R expressiosn), construct parameter grids and environments for simulation, all using helpers that follow tidyverse evaluation semantics
+Description: Record simulations in R recipes (series of R expressions), construct parameter grids and environments for simulation, all using helpers that follow tidyverse evaluation semantics
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
