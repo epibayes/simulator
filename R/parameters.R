@@ -353,7 +353,7 @@ expand_parameters = function(..., recipes, n_batches = 50) {
     purrr::pmap(list) %>%
     purrr::map(simulator::parameters, output = recipes$output, shared = recipes$shared,
       initialization = recipes$initialization, running = recipes$running) %>%
-    simulator::env_list_list_as_tibble()
+    env_list_list_as_tibble()
   return(parameter_grid)
 }
 
