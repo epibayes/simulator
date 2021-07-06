@@ -172,10 +172,12 @@ population = R6::R6Class(
     #' @return list or enviornment with evaluated expressions
     summarize = function(..., .return_type = 'env') {
       if (self$n_units == 0 || self$n_states == 0) {
-        if (isTRUE(.return_type == 'list')) {
-          return(as.list(rlang::child_env(private$.data)))
-        } else {
+        if (isTRUE(.return_type == 'env')) {
           return(rlang::child_env(private$.data))
+        } else if (.return_type == 'tibble') {
+          return(tibble::tibble())
+        } else {
+          return(list())
         }
       }
       private$.sync()
