@@ -134,7 +134,11 @@ population = R6::R6Class(
         return(logical(length = 0))
       }
       private$.sync()
-      dm = rlang::new_data_mask(bottom = private$.data, top = private$.data)
+      env = rlang::child_env(private$.data)
+      rlang::env_bind(env, time = rep(private$.time, self$n_units))
+      rlang::env_bind(env, group = rep(private$.group, self$n_units))
+      rlang::env_bind(env, id = private$.id)
+      dm = rlang::new_data_mask(bottom = env, top = private$.data)
       test = rlang::enquos(...)
       matched = purrr::map(test, rlang::eval_tidy, data = dm) %>%
         purrr::pmap(~ isTRUE(all(...))) %>% 
