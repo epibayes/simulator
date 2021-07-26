@@ -24,9 +24,15 @@
 make_population = function(
   time, group, ...,
   steps = recipe(),
-  .env = rlang::env(),
-  .counter = simulator::get_counter()
+  .env,
+  .counter,
 ) {
+  if (missing(.env)) {
+    .env = rlang::env()
+  }
+  if (missing(.counter)) {
+    .counter = simulator::get_counter()
+  }
   e_local = rlang::new_environment(parent = .env)
   context = list(...)
   context_vars = names(context)
