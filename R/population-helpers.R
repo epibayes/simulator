@@ -25,7 +25,7 @@ make_population = function(
   time, group, ...,
   steps = recipe(),
   .env,
-  .counter,
+  .counter
 ) {
   if (missing(.env)) {
     .env = rlang::env()
