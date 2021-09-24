@@ -322,7 +322,13 @@ parameters = function(
 #'        generates a grouping factor with labels).
 #' @return tibble of parameter values
 #' @export
-expand_parameters = function(..., recipes, n_batches = 50) {
+expand_parameters = function(
+  ..., 
+  recipes, 
+  n_batches = 50, 
+  timestamp = timestamp(),
+  revision = ""
+) {
   args = list(...)
   for (i in seq_along(args)) {
     args[[i]] = args[[i]] %>%
@@ -342,7 +348,9 @@ expand_parameters = function(..., recipes, n_batches = 50) {
     dplyr::select(-width_replicate_id) %>%
     tidyr::unnest(replicate, names_sep = '_') %>%
     dplyr::mutate(
-      output_path = list("simulations", simulation_name, simulation_id, replicate_id) %>%
+      output_path = list("simulations", paste0("rev--", revision), 
+          paste0("timestamp--", timestamp), simulation_name, 
+          simulation_id, replicate_id) %>%
         purrr::pmap(workflow::build_dir) %>%
         purrr::flatten_chr(),
       job_tag = paste(simulation_name, '-simulation-id', simulation_id,
