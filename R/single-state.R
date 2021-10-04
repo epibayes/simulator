@@ -263,7 +263,7 @@ state = R6::R6Class(
       }
       m = Matrix::sparseMatrix(
         i = row_idx, j = col_idx, x = rep(1, length(row_idx)),
-        dims = dims, dimnames = list(1:dims[1], names(idx)))
+        dims = dims, dimnames = list(seq_len(dims[1]), names(idx)))
       return(m)
     },
     #' (internal) transform the index representation of the state vector to a 
