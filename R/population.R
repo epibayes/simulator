@@ -79,8 +79,11 @@ population = R6::R6Class(
       if (self$time != x$time) {
         stop("Times of populations must match to absorb.")
       }
-      if (x$n_units == 0 || x$n_states == 0) {
+      if (x$n_units == 0) {
         return(self)
+      } else if (self$n_units == 0) {
+        self = x
+        return(x)
       }
       private$.match_components(x)
       for (sn in self$states) {
@@ -90,6 +93,7 @@ population = R6::R6Class(
         self$set(cov, c(self$get(cov), x$get(cov)))
       }
       private$.id = c(self$id, x$id)
+      private$.n_units = private$.count_units(private$.data)
       return(self)
     },
     #' @description
@@ -113,7 +117,7 @@ population = R6::R6Class(
     #' @param levels vector of levels (of any state) to drop
     #' @return self, without specified rows
     drop = function(rows, levels) {
-      if (self$n_units == 0 || self$n_states == 0) {
+      if (self$n_units == 0) {
         return(self)
       }
       if (missing(rows) && !missing(levels)) {
@@ -319,6 +323,7 @@ population = R6::R6Class(
         n_units = 0
       }
       stopifnot(length(n_units) == 1)
+      private$.n_units = n_units
       return(n_units)
     }
   ),
