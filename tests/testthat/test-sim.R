@@ -9,7 +9,7 @@ testthat::test_that("Simulation parameters list parent-child relationships work.
       bug = 55),
     initialization = recipe(n_iterations = 100, n_steps = 50),
     running = recipe(n_iterations = 101, n_steps = 52),
-    inputs = list(dog = "zebra", cat = 10))
+    data = list(dog = "zebra", cat = 10))
   testthat::expect_equal(theta$initialization$n_iterations, 100)
   testthat::expect_equal(theta$running$n_iterations, 101)
   testthat::expect_equal(rlang::env_get(theta$running, 'a', inherit = TRUE), "zebra")
@@ -25,7 +25,7 @@ testthat::test_that("Simulation parameters list parent-child relationships work 
       bug = 55),
     initialization = recipe(n_iterations = 100, n_steps = 50),
     running = recipe(n_iterations = 101, n_steps = 52),
-    inputs = list(dog = "zebra", cat = 10))
+    data = list(dog = "zebra", cat = 10))
   steppies = recipe(bobo = nono + n_steps + n_iterations)
   testthat::expect_equal(steppies$execute(bottom = theta$running, top = theta$root)$bobo, 55 + 52 + 101)
   testthat::expect_equal(steppies$execute(theta$initialization, theta$root)$bobo, 55 + 50 + 100)
@@ -51,7 +51,7 @@ testthat::test_that("Simulation function runs a simple simulation.", {
     running = recipe(
       n_steps = n_steps
     ),
-    inputs = list(
+    data = list(
       simulation_name = "simple-test",
       simulation_id = "A0001",
       replicate_id = "R00001",

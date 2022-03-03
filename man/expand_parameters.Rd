@@ -4,7 +4,13 @@
 \alias{expand_parameters}
 \title{Expand lists of parameters, combine and insert metadata}
 \usage{
-expand_parameters(..., recipes, n_batches = 50)
+expand_parameters(
+  ...,
+  recipes,
+  n_batches = 50,
+  timestamp = timestamp(),
+  revision = ""
+)
 }
 \arguments{
 \item{...}{each dot-arg is a list of (optionally nested) lists

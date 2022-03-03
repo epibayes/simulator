@@ -4,14 +4,7 @@
 \alias{make_population}
 \title{Create the initial state for a simulation.}
 \usage{
-make_population(
-  time,
-  group,
-  ...,
-  steps = recipe(),
-  .env = rlang::env(),
-  .counter = simulator::get_counter()
-)
+make_population(time, group, ..., steps = recipe(), .env, .counter)
 }
 \arguments{
 \item{time}{base time to start pop from}
